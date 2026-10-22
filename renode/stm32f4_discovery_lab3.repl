@@ -1,0 +1,30 @@
+using "platforms/boards/stm32f4_discovery.repl"
+
+// STM32F4DISCOVERY as the lab3 firmware sees it. Based on the course's
+// stm32f4_discovery_full.repl (lab1_wakeword_test/platforms/).
+
+// SysTick runs from the 168 MHz core clock (board.c sets up the PLL).
+nvic:
+    systickFrequency: 168000000
+
+// 64 KB of CPU-only CCM RAM at 0x10000000: missing from Renode's stock
+// stm32f4.repl. Holds ExecuTorch's method/temp pools, the UART ring, the LUT.
+ccmram: Memory.MappedMemory @ sysbus 0x10000000
+    size: 0x10000
+
+// The STM32F407VG has 128 KB of main SRAM and 1 MB of Flash; the stock
+// description has 256 KB and 2 MB. The model is loaded at 0x08080000,
+// the upper 512 KB of this Flash.
+sram:
+    size: 0x20000
+
+flash:
+    size: 0x100000
+
+// Renode has no model of the Cortex-M DWT cycle counter (it only tags the
+// range, and every read logs a warning). A plain RAM stub keeps the log
+// quiet; CYCCNT then always reads 0, so the "cycles" field of every R line
+// is 0 under Renode. Renode is not cycle-accurate anyway: latency is only
+// meaningful on the real board.
+dwt_stub: Memory.MappedMemory @ sysbus 0xE0001000
+    size: 0x1000

@@ -1,0 +1,19 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "stm32",
+      "displayName": "STM32F407 (bare-metal Cortex-M4, ExecuTorch with CMSIS-NN)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/stm32",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "MinSizeRel",
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/arm-none-eabi.cmake",
+        "EXECUTORCH_BUILD_DIR": "$env{HOME}/executorch/executorch-build/cortex-m4-cmsis"
+      }
+    }
+  ],
+  "buildPresets": [
+    { "name": "stm32", "configurePreset": "stm32" }
+  ]
+}
