@@ -95,7 +95,16 @@ def filter_scores(model: CifarVGG, i: int, method: str, batches=None) -> torch.T
     # TODO(student): at least one more criterion, e.g. "bn" (|gamma| of
     # model.bns[i]) and/or "l2" or "apoz" (see apoz_scores above, also yours
     # to write). README-suggestions.md: compare at least two.
-    raise NotImplementedError(f"filter_scores: method {method!r} not written yet")
+    conv, bn = model.convs[i], model.bns[i]
+    if method == "l1":
+        return conv.weight.abs().sum(dim=(1, 2, 3))
+    if method == "l2":
+        return conv.weight.pow(2).sum(dim=(1, 2, 3)).sqrt()
+    if method == "bn":                        # network slimming: |gamma|
+        return bn.weight.abs()
+    if method == "random":
+        return torch.rand(conv.out_channels, device=conv.weight.device)
+    raise ValueError(f"unknown method {method!r}")
 
 
 def keep_indices(scores: torch.Tensor, n_keep: int) -> torch.Tensor:
@@ -126,7 +135,55 @@ def slim(model: CifarVGG, keep: list) -> CifarVGG:
     #   new = build_model({"channels": [len(k) for k in keep], "num_classes": 10})
     #   then, layer by layer, the slices listed in the docstring. Don't forget
     #   BatchNorm's running statistics: they are buffers, not parameters.
-    raise NotImplementedError("slim")
+    
+    assert len(keep) == len(model.convs) == len(model.bns)
+    device = model.fc.weight.device
+    keep = [k.to(device=device, dtype=torch.long) for k in keep]
+    
+    new = copy.deepcopy(model)
+    prev = torch.arange(model.convs[0].in_channels, device=device)
+    
+    for i, (conv, bn) in enumerate(zip(model.convs, model.bns)):
+        assert conv.groups == 1
+        out_idx = keep[i]
+    
+        c = torch.nn.Conv2d(
+            len(prev), len(out_idx), conv.kernel_size,
+            stride=conv.stride, padding=conv.padding, dilation=conv.dilation,
+            bias=conv.bias is not None, padding_mode=conv.padding_mode,
+        ).to(device=device, dtype=conv.weight.dtype)
+        c.weight.copy_(conv.weight[out_idx][:, prev])
+        if conv.bias is not None:
+            c.bias.copy_(conv.bias[out_idx])
+    
+        b = torch.nn.BatchNorm2d(
+            len(out_idx), eps=bn.eps, momentum=bn.momentum,
+            affine=bn.affine, track_running_stats=bn.track_running_stats,
+        ).to(device=device)
+        if bn.affine:
+            b.weight.copy_(bn.weight[out_idx])
+            b.bias.copy_(bn.bias[out_idx])
+        if bn.track_running_stats:
+            b.running_mean.copy_(bn.running_mean[out_idx])
+            b.running_var.copy_(bn.running_var[out_idx])
+            b.num_batches_tracked.copy_(bn.num_batches_tracked)
+    
+        new.convs[i] = c
+        new.bns[i] = b
+        prev = out_idx
+    
+    fc = model.fc
+    f = torch.nn.Linear(len(prev), fc.out_features, bias=fc.bias is not None)
+    f = f.to(device=device, dtype=fc.weight.dtype)
+    f.weight.copy_(fc.weight[:, prev])
+    if fc.bias is not None:
+        f.bias.copy_(fc.bias)
+    new.fc = f
+    
+    new.channels = [len(k) for k in keep]
+    new.train(model.training)
+    return new
+
 
 
 def prune_to(model: CifarVGG, channels: list, method: str, batches=None) -> CifarVGG:
@@ -149,12 +206,24 @@ def kd_loss(teacher: torch.nn.Module, T: float = 4.0, alpha: float = 0.9):
     teacher (the unpruned baseline) runs in eval mode, without gradients."""
     teacher.eval()
 
+
     def fn(model, x, y):
         logits = model(x)
         # TODO(student): the distillation loss above. Run the teacher under
         # torch.no_grad(). F.kl_div expects log-probabilities as its first
         # argument and probabilities as its second.
-        raise NotImplementedError("kd_loss")
+        
+        with torch.no_grad():
+            t_logits = teacher(x)
+
+        soft = F.kl_div(
+            F.log_softmax(logits / T, dim=1),   # student: log-probs
+            F.softmax(t_logits / T, dim=1),     # teacher: probs
+            reduction="batchmean",
+        ) * (T * T)
+        hard = F.cross_entropy(logits, y)
+
+        loss = alpha * soft + (1 - alpha) * hard
         return loss, logits
 
     return fn
@@ -192,8 +261,45 @@ def sensitivity(model: CifarVGG, val, method: str, keep_ratios, batches=None) ->
     # TODO(student): for each conv i and each ratio r: keep
     # round(BASELINE_CHANNELS[i] * r) channels of layer i only (every other
     # layer keeps all of its channels), slim, evaluate. Print as you go.
-    raise NotImplementedError("sensitivity")
+    device = model.fc.weight.device
+    full = [torch.arange(c.out_channels, device=device) for c in model.convs]
+    results = {}
 
+    for i in range(len(model.convs)):
+        key = f"conv{i}"
+        results[key] = []
+        scores = filter_scores(model, i, method, batches)   # once per layer, not per ratio
+        for r in keep_ratios:
+            n = max(1, round(BASELINE_CHANNELS[i] * r))
+            n = min(n, model.convs[i].out_channels)
+
+            keep = list(full)
+            keep[i] = keep_indices(scores, n)
+
+            small = slim(model, keep)
+            small.eval()
+            acc = evaluate(small, val)
+
+            results[key].append((r, n, acc))
+            print(f"{key}  ratio={r:.2f}  channels={n:4d}  acc={acc:.4f}", flush=True)
+            del small
+
+    return results
+
+def select_channels(model, i, n, method):
+    """Indices of the n channels in conv i to keep, best first."""
+    conv, bn = model.convs[i], model.bns[i]
+    if method == "l1":
+        score = conv.weight.abs().sum(dim=(1, 2, 3))
+    elif method == "l2":
+        score = conv.weight.pow(2).sum(dim=(1, 2, 3)).sqrt()
+    elif method == "bn":                      # network slimming: |gamma|
+        score = bn.weight.abs()
+    elif method == "random":
+        score = torch.rand(conv.out_channels, device=conv.weight.device)
+    else:
+        raise ValueError(f"unknown method {method!r}")
+    return score.topk(n).indices
 
 # --------------------------------------------------------------------------
 # Gradual schedule

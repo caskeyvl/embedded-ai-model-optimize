@@ -1,0 +1,8 @@
+{
+ "calib_n": 512,
+ "calib_seed": 0,
+ "calib_file": null,
+ "act_observer": "histogram",
+ "weights": "per-channel",
+ "fp32_layers": []
+}

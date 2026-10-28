@@ -1,0 +1,674 @@
+{
+ "version": 1,
+ "candidates": [
+  {
+   "name": "c1_uniform50_bn",
+   "recipe": "bn criterion, 1 round(s), 8 final epochs at lr 0.01, cross-entropy",
+   "channels": [
+    32,
+    32,
+    64,
+    64,
+    128,
+    128
+   ],
+   "params": 288746,
+   "macs": 38634752,
+   "pte_bytes": 303112,
+   "planned_bytes": 65536,
+   "val_fp32": 0.8904,
+   "val_int8": 0.8898,
+   "export_flags": {
+    "calib_n": 512,
+    "calib_seed": 0,
+    "calib_file": null,
+    "act_observer": "histogram",
+    "weights": "per-channel",
+    "fp32_layers": []
+   },
+   "final": false,
+   "logged_at": "2026-10-27T21:23:47-06:00",
+   "first_logged_at": "2026-10-27T21:21:22-06:00"
+  },
+  {
+   "name": "c2_conv5_64",
+   "recipe": "bn criterion, 1 round(s), 8 final epochs at lr 0.01, cross-entropy",
+   "channels": [
+    32,
+    32,
+    64,
+    64,
+    128,
+    64
+   ],
+   "params": 214250,
+   "macs": 33915520,
+   "pte_bytes": 227976,
+   "planned_bytes": 65536,
+   "val_fp32": 0.8898,
+   "val_int8": 0.89,
+   "export_flags": {
+    "calib_n": 512,
+    "calib_seed": 0,
+    "calib_file": null,
+    "act_observer": "histogram",
+    "weights": "per-channel",
+    "fp32_layers": []
+   },
+   "final": false,
+   "logged_at": "2026-10-27T21:28:18-06:00",
+   "first_logged_at": "2026-10-27T21:28:18-06:00"
+  },
+  {
+   "name": "c3_conv1_32_conv3_128",
+   "recipe": "bn criterion, 1 round(s), 8 final epochs at lr 0.01, cross-entropy",
+   "channels": [
+    32,
+    64,
+    64,
+    128,
+    64,
+    64
+   ],
+   "params": 241962,
+   "macs": 55149184,
+   "pte_bytes": 256008,
+   "planned_bytes": 98304,
+   "val_fp32": 0.898,
+   "val_int8": 0.8964,
+   "export_flags": {
+    "calib_n": 512,
+    "calib_seed": 0,
+    "calib_file": null,
+    "act_observer": "histogram",
+    "weights": "per-channel",
+    "fp32_layers": []
+   },
+   "final": false,
+   "logged_at": "2026-10-27T21:35:33-06:00",
+   "first_logged_at": "2026-10-27T21:35:33-06:00"
+  },
+  {
+   "name": "c4_conv5_256",
+   "recipe": "bn criterion, 1 round(s), 8 final epochs at lr 0.01, cross-entropy",
+   "channels": [
+    32,
+    32,
+    128,
+    128,
+    64,
+    256
+   ],
+   "params": 419434,
+   "macs": 71666176,
+   "pte_bytes": 435720,
+   "planned_bytes": 73728,
+   "val_fp32": 0.9024,
+   "val_int8": 0.9026,
+   "export_flags": {
+    "calib_n": 512,
+    "calib_seed": 0,
+    "calib_file": null,
+    "act_observer": "histogram",
+    "weights": "per-channel",
+    "fp32_layers": []
+   },
+   "final": false,
+   "logged_at": "2026-10-27T21:42:32-06:00",
+   "first_logged_at": "2026-10-27T21:42:32-06:00"
+  },
+  {
+   "name": "c9_conv6_128",
+   "recipe": "bn criterion, 1 round(s), 15 final epochs at lr 0.01, KD T=4.0 alpha=0.9",
+   "channels": [
+    32,
+    32,
+    64,
+    64,
+    64,
+    128
+   ],
+   "params": 178026,
+   "macs": 31556864,
+   "pte_bytes": 191752,
+   "planned_bytes": 65536,
+   "val_fp32": 0.8972,
+   "val_int8": 0.8972,
+   "export_flags": {
+    "calib_n": 512,
+    "calib_seed": 0,
+    "calib_file": null,
+    "act_observer": "histogram",
+    "weights": "per-channel",
+    "fp32_layers": []
+   },
+   "final": false,
+   "logged_at": "2026-10-27T22:18:56-06:00",
+   "first_logged_at": "2026-10-27T22:18:56-06:00"
+  },
+  {
+   "name": "c5_c3_kd",
+   "recipe": "bn criterion, 1 round(s), 8 final epochs at lr 0.01, KD T=4.0 alpha=0.9",
+   "channels": [
+    32,
+    64,
+    64,
+    128,
+    64,
+    64
+   ],
+   "params": 241962,
+   "macs": 55149184,
+   "pte_bytes": 256008,
+   "planned_bytes": 98304,
+   "val_fp32": 0.9044,
+   "val_int8": 0.9038,
+   "export_flags": {
+    "calib_n": 512,
+    "calib_seed": 0,
+    "calib_file": null,
+    "act_observer": "histogram",
+    "weights": "per-channel",
+    "fp32_layers": []
+   },
+   "final": false,
+   "logged_at": "2026-10-27T22:21:05-06:00",
+   "first_logged_at": "2026-10-27T22:21:05-06:00"
+  },
+  {
+   "name": "c8_c5_kd",
+   "recipe": "bn criterion, 1 round(s), 8 final epochs at lr 0.01, KD T=4.0 alpha=0.9, from runs/c5_dropoff/checkpoint.pt",
+   "channels": [
+    32,
+    32,
+    128,
+    64,
+    64,
+    64
+   ],
+   "params": 195818,
+   "macs": 43352704,
+   "pte_bytes": 209544,
+   "planned_bytes": 65536,
+   "val_fp32": 0.899,
+   "val_int8": 0.9004,
+   "export_flags": {
+    "calib_n": 512,
+    "calib_seed": 0,
+    "calib_file": null,
+    "act_observer": "histogram",
+    "weights": "per-channel",
+    "fp32_layers": []
+   },
+   "final": false,
+   "logged_at": "2026-10-27T22:34:47-06:00",
+   "first_logged_at": "2026-10-27T22:34:47-06:00"
+  },
+  {
+   "name": "c10_light",
+   "recipe": "bn criterion, 1 round(s), 15 final epochs at lr 0.01, cross-entropy",
+   "channels": [
+    32,
+    32,
+    128,
+    32,
+    128,
+    32
+   ],
+   "params": 158634,
+   "macs": 33915200,
+   "pte_bytes": 172360,
+   "planned_bytes": 65536,
+   "val_fp32": 0.8876,
+   "val_int8": 0.8886,
+   "export_flags": {
+    "calib_n": 512,
+    "calib_seed": 0,
+    "calib_file": null,
+    "act_observer": "histogram",
+    "weights": "per-channel",
+    "fp32_layers": []
+   },
+   "final": false,
+   "logged_at": "2026-10-27T22:35:05-06:00",
+   "first_logged_at": "2026-10-27T22:35:05-06:00"
+  },
+  {
+   "name": "c7_from_c4",
+   "recipe": "bn criterion, 1 round(s), 8 final epochs at lr 0.01, cross-entropy, from runs/c4_conv5_256/checkpoint.pt",
+   "channels": [
+    32,
+    32,
+    128,
+    64,
+    64,
+    256
+   ],
+   "params": 308714,
+   "macs": 50432512,
+   "pte_bytes": 324360,
+   "planned_bytes": 65536,
+   "val_fp32": 0.8962,
+   "val_int8": 0.8978,
+   "export_flags": {
+    "calib_n": 512,
+    "calib_seed": 0,
+    "calib_file": null,
+    "act_observer": "histogram",
+    "weights": "per-channel",
+    "fp32_layers": []
+   },
+   "final": false,
+   "logged_at": "2026-10-27T22:35:28-06:00",
+   "first_logged_at": "2026-10-27T22:35:28-06:00"
+  },
+  {
+   "name": "c5_dropoff",
+   "recipe": "bn criterion, 1 round(s), 15 final epochs at lr 0.01, cross-entropy",
+   "channels": [
+    32,
+    32,
+    128,
+    64,
+    64,
+    64
+   ],
+   "params": 195818,
+   "macs": 43352704,
+   "pte_bytes": 209544,
+   "planned_bytes": 65536,
+   "val_fp32": 0.8932,
+   "val_int8": 0.8912,
+   "export_flags": {
+    "calib_n": 512,
+    "calib_seed": 0,
+    "calib_file": null,
+    "act_observer": "histogram",
+    "weights": "per-channel",
+    "fp32_layers": []
+   },
+   "final": false,
+   "logged_at": "2026-10-27T22:35:56-06:00",
+   "first_logged_at": "2026-10-27T22:35:56-06:00"
+  },
+  {
+   "name": "final",
+   "recipe": "bn criterion, 3 round(s), 25 final epochs at lr 0.01, 3 epochs per earlier round, KD T=4.0 alpha=0.9",
+   "channels": [
+    32,
+    32,
+    64,
+    64,
+    64,
+    128
+   ],
+   "params": 178026,
+   "macs": 31556864,
+   "pte_bytes": 191752,
+   "planned_bytes": 65536,
+   "val_fp32": 0.9034,
+   "val_int8": 0.9014,
+   "export_flags": {
+    "calib_n": 512,
+    "calib_seed": 0,
+    "calib_file": null,
+    "act_observer": "histogram",
+    "weights": "per-channel",
+    "fp32_layers": []
+   },
+   "device": {
+    "accuracy": 0.904,
+    "n": 500,
+    "agreement": 0.986,
+    "source": "renode_val.json"
+   },
+   "final": true,
+   "logged_at": "2026-10-27T22:39:42-06:00",
+   "first_logged_at": "2026-10-27T22:33:55-06:00"
+  }
+ ],
+ "sensitivity": [
+  {
+   "method": "l1",
+   "n_val": 2000,
+   "baseline_acc": 0.9265,
+   "layers": {
+    "conv0": [
+     [
+      0.75,
+      48,
+      0.907
+     ],
+     [
+      0.5,
+      32,
+      0.864
+     ],
+     [
+      0.375,
+      24,
+      0.738
+     ],
+     [
+      0.25,
+      16,
+      0.3515
+     ],
+     [
+      0.125,
+      8,
+      0.231
+     ]
+    ],
+    "conv1": [
+     [
+      0.75,
+      48,
+      0.782
+     ],
+     [
+      0.5,
+      32,
+      0.4145
+     ],
+     [
+      0.375,
+      24,
+      0.2645
+     ],
+     [
+      0.25,
+      16,
+      0.324
+     ],
+     [
+      0.125,
+      8,
+      0.2035
+     ]
+    ],
+    "conv2": [
+     [
+      0.75,
+      96,
+      0.86
+     ],
+     [
+      0.5,
+      64,
+      0.559
+     ],
+     [
+      0.375,
+      48,
+      0.4395
+     ],
+     [
+      0.25,
+      32,
+      0.2355
+     ],
+     [
+      0.125,
+      16,
+      0.1835
+     ]
+    ],
+    "conv3": [
+     [
+      0.75,
+      96,
+      0.8455
+     ],
+     [
+      0.5,
+      64,
+      0.447
+     ],
+     [
+      0.375,
+      48,
+      0.2205
+     ],
+     [
+      0.25,
+      32,
+      0.2275
+     ],
+     [
+      0.125,
+      16,
+      0.106
+     ]
+    ],
+    "conv4": [
+     [
+      0.75,
+      192,
+      0.8835
+     ],
+     [
+      0.5,
+      128,
+      0.7945
+     ],
+     [
+      0.375,
+      96,
+      0.5625
+     ],
+     [
+      0.25,
+      64,
+      0.4355
+     ],
+     [
+      0.125,
+      32,
+      0.387
+     ]
+    ],
+    "conv5": [
+     [
+      0.75,
+      192,
+      0.895
+     ],
+     [
+      0.5,
+      128,
+      0.797
+     ],
+     [
+      0.375,
+      96,
+      0.655
+     ],
+     [
+      0.25,
+      64,
+      0.5425
+     ],
+     [
+      0.125,
+      32,
+      0.557
+     ]
+    ]
+   },
+   "source": "sensitivity_l1.json",
+   "logged_at": "2026-10-27T21:05:52-06:00"
+  },
+  {
+   "method": "bn",
+   "n_val": 2000,
+   "baseline_acc": 0.9265,
+   "layers": {
+    "conv0": [
+     [
+      0.75,
+      48,
+      0.8915
+     ],
+     [
+      0.5,
+      32,
+      0.673
+     ],
+     [
+      0.375,
+      24,
+      0.5355
+     ],
+     [
+      0.25,
+      16,
+      0.308
+     ],
+     [
+      0.125,
+      8,
+      0.204
+     ]
+    ],
+    "conv1": [
+     [
+      0.75,
+      48,
+      0.7975
+     ],
+     [
+      0.5,
+      32,
+      0.5165
+     ],
+     [
+      0.375,
+      24,
+      0.425
+     ],
+     [
+      0.25,
+      16,
+      0.1905
+     ],
+     [
+      0.125,
+      8,
+      0.1185
+     ]
+    ],
+    "conv2": [
+     [
+      0.75,
+      96,
+      0.8865
+     ],
+     [
+      0.5,
+      64,
+      0.7345
+     ],
+     [
+      0.375,
+      48,
+      0.507
+     ],
+     [
+      0.25,
+      32,
+      0.324
+     ],
+     [
+      0.125,
+      16,
+      0.133
+     ]
+    ],
+    "conv3": [
+     [
+      0.75,
+      96,
+      0.8735
+     ],
+     [
+      0.5,
+      64,
+      0.685
+     ],
+     [
+      0.375,
+      48,
+      0.4915
+     ],
+     [
+      0.25,
+      32,
+      0.324
+     ],
+     [
+      0.125,
+      16,
+      0.1575
+     ]
+    ],
+    "conv4": [
+     [
+      0.75,
+      192,
+      0.867
+     ],
+     [
+      0.5,
+      128,
+      0.818
+     ],
+     [
+      0.375,
+      96,
+      0.7165
+     ],
+     [
+      0.25,
+      64,
+      0.5755
+     ],
+     [
+      0.125,
+      32,
+      0.2515
+     ]
+    ],
+    "conv5": [
+     [
+      0.75,
+      192,
+      0.9165
+     ],
+     [
+      0.5,
+      128,
+      0.8945
+     ],
+     [
+      0.375,
+      96,
+      0.867
+     ],
+     [
+      0.25,
+      64,
+      0.787
+     ],
+     [
+      0.125,
+      32,
+      0.601
+     ]
+    ]
+   },
+   "source": "sensitivity_bn.json",
+   "logged_at": "2026-10-27T21:05:52-06:00"
+  }
+ ]
+}
